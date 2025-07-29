@@ -33,7 +33,7 @@ function Scene() {
           maxDistance={500}
         />
 
-      <Environment preset="studio" background />
+      <Environment files="/back.hdr" background />
       </Suspense>
     </Canvas>
   );
