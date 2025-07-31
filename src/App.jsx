@@ -1,31 +1,39 @@
 // src/App.jsx
-import React, { Suspense } from 'react'; // Necesitamos Suspense aquí para el fallback HTML
+import React, { Suspense, useRef } from 'react'; // Importa useRef
 import Scene from './components/Scene';
+import UIControls from './components/UIControls'; // Importa UIControls
 import './index.css';
 
 function App() {
+  const orbitControlsRef = useRef(); // Ref para OrbitControls
+
+   // Función para resetear la cámara (llamada desde UIControls)
+  const handleResetCamera = () => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.reset(); // Método reset de OrbitControls
+      console.log('Cámara reseteada.'); // Para depuración
+    } else {
+      console.log('OrbitControls ref no está disponible.'); // Para depuración
+    }
+  };
+
   return (
-    // Este div es el contenedor de toda tu aplicación, ocupará el 100% de la ventana.
-    // 'relative' es crucial para posicionar el overlay de carga.
     <div className="w-full h-screen relative">
-      {/*
-        Este Suspense es el ÚNICO que debe tener un fallback de HTML.
-        Envuelve todo el contenido 3D (tu Scene) y mostrará "Cargando escena 3D..."
-        mientras el modelo (y otros assets grandes) dentro de Scene se cargan.
-      */}
+      {/* Aquí se le pasa el ref a la Scene. Más adelante, OrbitControls dentro de Scene.jsx
+          necesitará acceder a este ref. */}
+
+      {/* Este Suspense envuelve el Scene para mostrar el cargador HTML */}
       <Suspense fallback={
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white text-2xl z-50">
-          Cargando escena 3D... {/* <--- ¡Este es tu cargador HTML! */}
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white text-2xl">
+          Cargando escena 3D...
         </div>
       }>
-        {/* Aquí es donde se renderiza tu escena 3D completa. */}
-        {/* Solo una instancia de <Scene />. */}
-        <Scene />
+      
+      <Scene orbitControlsRef={orbitControlsRef} /> {/* Pasa la ref a Scene */}
       </Suspense>
 
-      {/* Aquí es donde eventualmente agregarías otros componentes de UI (botones, info, etc.)
-          que NO sean parte de la escena 3D, y que quieres que aparezcan POR ENCIMA del Canvas.
-          Por ejemplo: <UIControls /> */}
+      {/* Renderiza los controles de la UI */}
+      <UIControls onResetCamera={handleResetCamera} />
     </div>
   );
 }
