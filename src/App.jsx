@@ -1,40 +1,19 @@
 // src/App.jsx
-import React, { Suspense, useRef } from 'react'; // Importa useRef
-import Scene from './components/Scene';
-import UIControls from './components/UIControls'; // Importa UIControls
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing';
+import MotoConfigurator from './pages/MotoConfigurator';
 import './index.css';
 
 function App() {
-  const orbitControlsRef = useRef(); // Ref para OrbitControls
-
-   // Función para resetear la cámara (llamada desde UIControls)
-  const handleResetCamera = () => {
-    if (orbitControlsRef.current) {
-      orbitControlsRef.current.reset(); // Método reset de OrbitControls
-      console.log('Cámara reseteada.'); // Para depuración
-    } else {
-      console.log('OrbitControls ref no está disponible.'); // Para depuración
-    }
-  };
-
   return (
-    <div className="w-full h-screen relative">
-      {/* Aquí se le pasa el ref a la Scene. Más adelante, OrbitControls dentro de Scene.jsx
-          necesitará acceder a este ref. */}
-
-      {/* Este Suspense envuelve el Scene para mostrar el cargador HTML */}
-      <Suspense fallback={
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70 text-white text-2xl">
-          Cargando escena 3D...
-        </div>
-      }>
-      
-      <Scene orbitControlsRef={orbitControlsRef} /> {/* Pasa la ref a Scene */}
-      </Suspense>
-
-      {/* Renderiza los controles de la UI */}
-      <UIControls onResetCamera={handleResetCamera} />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/configurator" element={<MotoConfigurator />} />
+        {/* Puedes añadir una ruta de fallback para 404 */}
+        <Route path="*" element={<div>404: Página no encontrada</div>} />
+      </Routes>
+    </Router>
   );
 }
 

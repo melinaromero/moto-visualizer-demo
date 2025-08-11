@@ -27,9 +27,9 @@ function Scene({ orbitControlsRef }) { // <-- Recibe la prop aquí
         <MotoModel />
         <ambientLight intensity={1.5} />
         <directionalLight
-          position={[10, 10, 10]} //ajustar esta posición para cambiar la dirección de la sombra
+          position={[10, 10, 10]} //Ajustar esta posición para cambiar la dirección de la sombra
           intensity={1}
-          castShadow // MUY IMPORTANTE: Esta luz proyectará sombras
+          castShadow // Esta luz proyectará sombras
           shadow-mapSize-width={1024} // Aumenta la resolución de la sombra
           shadow-mapSize-height={1024} // Aumenta la resolución de la sombra
           shadow-camera-far={50} // Distancia máxima de la sombra
@@ -43,7 +43,8 @@ function Scene({ orbitControlsRef }) { // <-- Recibe la prop aquí
           <planeGeometry args={[20, 20]} /> 
           <meshStandardMaterial color="#cccccc" />
         </mesh>
-      
+    
+       <Environment files="/studio.hdr" background blur={0.5} /> 
       </Suspense>
     </Canvas>
   );
