@@ -1,21 +1,42 @@
 // src/components/Scene.jsx
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-// Importa ContactShadows de Drei
-import { OrbitControls, Environment} from '@react-three/drei';
+import { OrbitControls, Environment } from '@react-three/drei';
 import MotoModel from './MotoModel';
-import * as THREE from 'three'; //importar THREE para Math.PI
+import * as THREE from 'three';
 
-function Scene({ orbitControlsRef }) { // <-- Recibe la prop aquí
+function Scene({ orbitControlsRef }) {
   return (
     <Canvas
       shadows
-      // Puedes ajustar esta cámara para que vea la moto cómodamente.
-      // Si la moto es escala 1, [5,5,5] suele ser un buen punto de partida.
-      camera={{ position: [5, 5, 5], fov: 75 }}
+      camera={{ position: [15, 15, 15], fov: 45 }}
       gl={{ antialias: true }}
     >
-      <OrbitControls
+      <Suspense fallback={null}>
+        <MotoModel />
+
+        <directionalLight
+          position={[10, 10, 10]}
+          intensity={1}
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
+        />
+        
+        <Environment files="/parking_garage_1k.hdr" background blur={0.5} />
+
+        <mesh rotation-x={-Math.PI / 2} position={[0, 0, 0]} receiveShadow>
+          <planeGeometry args={[20, 20]} />
+          {/* Color del suelo más oscuro para que coincida con el fondo */}
+          <meshStandardMaterial color="#303030" />
+        </mesh>
+
+        <OrbitControls
           ref={orbitControlsRef}
           makeDefault
           enableZoom={true}
@@ -23,29 +44,9 @@ function Scene({ orbitControlsRef }) { // <-- Recibe la prop aquí
           minDistance={1}
           maxDistance={500}
         />
-      <Suspense fallback={null}>
-        <MotoModel />
-        <ambientLight intensity={1.5} />
-        <directionalLight
-          position={[10, 10, 10]} //Ajustar esta posición para cambiar la dirección de la sombra
-          intensity={1}
-          castShadow // Esta luz proyectará sombras
-          shadow-mapSize-width={1024} // Aumenta la resolución de la sombra
-          shadow-mapSize-height={1024} // Aumenta la resolución de la sombra
-          shadow-camera-far={50} // Distancia máxima de la sombra
-          shadow-camera-left={-10} // Bounding box de la cámara de sombra
-          shadow-camera-right={10}
-          shadow-camera-top={10}
-          shadow-camera-bottom={-10}
-        />
-
-        <mesh rotation-x={-Math.PI / 2} position={[0, -0.001, 0]} receiveShadow>
-          <planeGeometry args={[20, 20]} /> 
-          <meshStandardMaterial color="#cccccc" />
-        </mesh>
-    
-       <Environment files="/studio.hdr" background blur={0.5} /> 
+        
       </Suspense>
+    
     </Canvas>
   );
 }
